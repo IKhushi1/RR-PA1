@@ -1,0 +1,77 @@
+---
+title: "Reproducible Research Assignment 1"
+author: "Satya Gudimetla"
+date: "Wednesday, January 14, 2015"
+output: html_document
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+setwd("c:\\Rex\\re-r")
+doc <- read.csv("activity.csv", header=TRUE)
+```
+
+What is mean total number of steps taken per day?
+
+```{r, echo=FALSE}
+mean(as.numeric(doc$steps), na.rm=TRUE)
+totalStepsPerDay <- aggregate(as.numeric(doc$steps) ~ doc$date, doc, sum, na.rm=TRUE)
+names(totalStepsPerDay) <- c("day", "totalsteps")
+hist(totalStepsPerDay$totalsteps)
+```
+
+What is the average daily activity pattern?
+
+```{r}
+MeantotalStepsPerDay <- aggregate(as.numeric(doc$steps) ~ doc$date, doc, mean, na.rm=TRUE)
+names(MeantotalStepsPerDay) <- c("date", "steps")
+plot(MeantotalStepsPerDay$steps, type="l")
+```
+
+47 the observation on 2012-11-23 has 73.5902778 whis is maximum among all the days.
+
+Medean value per day
+```{r}
+MedianantotalStepsPerDay <- aggregate(as.numeric(doc$steps) ~ doc$date, doc, median, na.rm=TRUE)
+names(MedianantotalStepsPerDay) <- c("date", "steps")
+MedianantotalStepsPerDay
+```
+
+##Total missing values
+
+```{r}
+totalNAs <- colSums(is.na(doc))
+totalNAs
+```
+
+```{r}
+doc[is.na(doc)] <- mean(as.numeric(doc$steps), na.rm=TRUE)
+newDoc <- doc
+NtotalStepsPerDay <- aggregate(as.numeric(newDoc$steps) ~ newDoc$date, newDoc, sum, na.rm=TRUE)
+names(NtotalStepsPerDay) <- c("day", "totalsteps")
+hist(as.numeric(NtotalStepsPerDay$totalsteps))
+```
+Yes there is difference.
+
+## Weekday Average 
+
+```{r}
+library(lubridate)
+doc$day <-  ifelse(wday(doc$date) >=2 & wday(doc$date) <=5, "weekday","weekend")
+weekdayDoc <- doc[which(doc$day=="weekday"),]
+MeantotalStepsweekdayDoc <- aggregate(as.numeric(weekdayDoc$steps) ~ weekdayDoc$date, weekdayDoc, mean, na.rm=TRUE)
+names(MeantotalStepsweekdayDoc) <- c("date", "steps")
+plot(MeantotalStepsweekdayDoc$steps, type="l")
+```
+
+## Weekend Average 
+
+```{r}
+weekendDoc <- doc[which(doc$day=="weekend"),]
+MeantotalStepsweekendDoc <- aggregate(as.numeric(weekendDoc$steps) ~ weekendDoc$date, weekendDoc, mean, na.rm=TRUE)
+names(MeantotalStepsweekendDoc) <- c("date", "steps")
+plot(MeantotalStepsweekendDoc$steps, type="l")
+```
